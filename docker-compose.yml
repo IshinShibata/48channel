@@ -1,0 +1,39 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: dockerMySQL
+    environment:
+      MYSQL_DATABASE: 48channel
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_ja_0900_as_cs
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+  server:
+    container_name: "48channel-server"
+    volumes:
+      - ./:/server
+    tty: true
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mysql
+    links:
+      - mysql:mysql
+    ports:
+      - "3000:3000"
+    environment:
+      MYSQL_DATABASE: 48channel
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_HOST: dockerMySQL
+volumes:
+  mysql:
