@@ -8,6 +8,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_HOST: 127.0.01
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_ja_0900_as_cs
     expose:
       - "3306"

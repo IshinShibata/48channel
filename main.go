@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -59,14 +60,12 @@ func main() {
 	})
 	db.AutoMigrate(&ThreadContent{}, &Thread{}, &Todo{})
 
-
 	router.GET("/user/:name", func(c *gin.Context) {
 		name := c.Param("name")
 		c.String(http.StatusOK, "Hello %s", name)
 	})
 	router.POST("/threads", insertThread)
 	router.GET("/threads", getThreadList)
-
 
 	router.Run(":3000")
 
@@ -79,8 +78,8 @@ func main() {
 func insertThread(c *gin.Context) {
 	Content := c.PostForm("content")
 	Title := c.DefaultPostForm("title", "title")
-  db := gormConnect()
-  defer db.Close()
+	db := gormConnect()
+	defer db.Close()
 
 	thread := Thread{}
 	thread.Content = Content
@@ -89,20 +88,20 @@ func insertThread(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"status": "ok",
 		"thread": thread,
-})
+	})
 	// return thread
 	// c.JSON(http.StatusOK, gin.H{"firstName": firstName, "lastName": lastName})
 }
 
 func getThreadList(c *gin.Context) {
-	firstName := c.PostForm("first_name")
-	lastName := c.DefaultPostForm("last_name", "default_last_name")
-  db := gormConnect()
-  defer db.Close()
+	//firstName := c.PostForm("first_name")
+	//lastName := c.DefaultPostForm("last_name", "default_last_name")
+	db := gormConnect()
+	defer db.Close()
 
-	todo := Todo{}
-	todo.Text = "test"
-	todo.Status = "testdesu"
-	db.Create(&todo)
-	c.JSON(http.StatusOK, gin.H{"firstName": firstName, "lastName": lastName})
+	var todos []Todo
+	result := db.Find(&todos)
+	fmt.Println(result.Value)
+	fmt.Printf("%T\n", result.Value)
+	c.JSON(http.StatusOK, result.Value)
 }
